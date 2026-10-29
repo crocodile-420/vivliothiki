@@ -74,23 +74,23 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
               <small>{c.glass.earn}</small>
             </Link>
           </aside>
-          <div className="doors">
-            {c.doors.map((d, i) => (
-              <Link key={d.title} className={`glass door${i ? " door-readers" : ""}`} href={href(d.href)}>
-                <span className="door-kicker">{d.kicker}</span>
-                <span className="door-title">{d.title}</span>
-                <ul>
-                  {d.points.map((p) => (
-                    <li key={p}>{p}</li>
-                  ))}
-                </ul>
-                <span className="door-cta">{d.cta}</span>
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
+      <div className="doors">
+        {c.doors.map((d, i) => (
+          <Link key={d.title} className={`door${i ? " door-readers" : ""}`} href={href(d.href)}>
+            <span className="door-kicker">{d.kicker}</span>
+            <span className="door-title">{d.title}</span>
+            <ul>
+              {d.points.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+            <span className="door-cta">{d.cta}</span>
+          </Link>
+        ))}
+      </div>
       <section id="for-whom">
         <p className="eyebrow-dark">{c.forWhom.eyebrow}</p>
         <h2 className="section-title">{c.forWhom.title}</h2>
