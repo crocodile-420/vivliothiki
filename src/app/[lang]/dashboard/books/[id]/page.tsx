@@ -7,6 +7,7 @@ import { formatPrice, minimumPrintPriceCents, splitSale } from "@/lib/pricing";
 import { requireProfile } from "@/lib/session";
 import { supabaseServer } from "@/lib/supabase/server";
 import { deleteEdition, submitForReview, updateBook } from "../../actions";
+import { type ChannelRow, Channels } from "./Channels";
 import { CoverUpload } from "./CoverUpload";
 import { EditionForm } from "./EditionForm";
 
@@ -17,9 +18,14 @@ export default async function BookEditor({ params }: { params: Promise<{ lang: L
   const t = getDictionary(lang);
   const profile = await requireProfile(lang);
   const supabase = await supabaseServer();
-  const { data } = await supabase.from("books").select("*, editions(*)").eq("id", id).eq("author_id", profile.id).maybeSingle();
+  const { data } = await supabase
+    .from("books")
+    .select("*, editions(*), book_channels(channel, status, listing_url, note)")
+    .eq("id", id)
+    .eq("author_id", profile.id)
+    .maybeSingle();
   if (!data) notFound();
-  const book = data as Book & { editions: Edition[] };
+  const book = data as Book & { editions: Edition[]; book_channels: ChannelRow[] };
   const editable = book.status === "draft" || book.status === "rejected";
   const packages = Object.entries(PRINT_PACKAGES).map(([key, p]) => ({ key, label: p.label[lang] }));
 
@@ -130,6 +136,15 @@ export default async function BookEditor({ params }: { params: Promise<{ lang: L
           />
         )}
       </section>
+
+      <Channels
+        lang={lang}
+        bookId={book.id}
+        published={book.status === "published"}
+        formats={book.editions.map((e) => e.format)}
+        rows={book.book_channels ?? []}
+        text={t.channels}
+      />
 
       {editable && (
         <section className="panel">

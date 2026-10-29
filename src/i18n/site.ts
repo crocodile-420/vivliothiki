@@ -44,6 +44,7 @@ const el = {
           heading: "Πωλήσεις",
           items: [
             { icon: "shop", title: "Βιβλιοπωλείο Vivliothiki", text: "Το βιβλίο σας στα ράφια μας, για αναγνώστες σε όλη την Ελλάδα.", href: "/books" },
+            { icon: "globe", title: "Amazon, Skroutz, Public και άλλα", text: "Το βιβλίο σας σε 14 κανάλια πωλήσεων, με ένα κλικ.", href: "#channels" },
             { icon: "link", title: "Σύνδεσμος αγοράς", text: "Πουλήστε από το δικό σας site, το Instagram ή το Facebook." },
             { icon: "stack", title: "Παραγγελίες σε ποσότητα", text: "Τύπωμα σε ελληνικό τυπογραφείο για 100 αντίτυπα και πάνω.", href: "#faq" },
           ],
@@ -51,7 +52,7 @@ const el = {
       ],
       features: [
         { art: "Το βιβλίο σας, στο ράφι σε 4 βήματα", tone: "forest", kicker: "Οδηγός", text: "Από το αρχείο σας στα χέρια του αναγνώστη.", href: "#how" },
-        { art: "Χωρίς Amazon", tone: "burgundy", kicker: "Γιατί εμείς", text: "Ελληνικά βιβλία που το Amazon KDP δεν δέχεται.", href: "#faq" },
+        { art: "Ελληνικά βιβλία και στο Amazon", tone: "burgundy", kicker: "Γιατί εμείς", text: "Το KDP δεν δέχεται ελληνικά. Εμείς τα πουλάμε εκεί για εσάς.", href: "#channels" },
       ],
     },
     {
@@ -125,7 +126,7 @@ const el = {
     lede: "Εκδώστε το βιβλίο σας σε λίγα λεπτά και φτάστε σε αναγνώστες στην Ελλάδα και σε όλο τον κόσμο. Κάθε αντίτυπο τυπώνεται μόνο όταν το παραγγείλει κάποιος.",
     doors: [
       { kicker: "Είμαι συγγραφέας", title: "Εκδώστε το βιβλίο σας", points: ["Χωρίς κόστος έκδοσης, χωρίς ελάχιστη ποσότητα", "Έντυπο, σκληρόδετο και ebook από τα ίδια αρχεία", "Βλέπετε το κέρδος σας πριν ορίσετε τιμή"], cta: "Ξεκινήστε δωρεάν →", href: "/dashboard" },
-      { kicker: "Είμαι αναγνώστης", title: "Ανακαλύψτε ανεξάρτητους συγγραφείς", points: ["Ελληνικά βιβλία που δεν θα βρείτε στο Amazon", "Παιδικά, αστυνομικά, ποίηση, σε πολλές γλώσσες", "Παράδοση σε 5–10 εργάσιμες ή ebook αμέσως"], cta: "Δείτε τα ράφια →", href: "/books" },
+      { kicker: "Είμαι αναγνώστης", title: "Ανακαλύψτε ανεξάρτητους συγγραφείς", points: ["Ελληνικά βιβλία από ανεξάρτητους συγγραφείς", "Παιδικά, αστυνομικά, ποίηση, σε πολλές γλώσσες", "Παράδοση σε 5–10 εργάσιμες ή ebook αμέσως"], cta: "Δείτε τα ράφια →", href: "/books" },
     ],
     forWhom: {
       eyebrow: "Για ποιον είναι",
@@ -154,6 +155,18 @@ const el = {
       mockPrice: "19,90 €",
       mockBuy: "Αγορά",
     },
+    channels: {
+      eyebrow: "Πωλήσεις παντού",
+      title: "Ένα βιβλίο, 14 κανάλια πωλήσεων",
+      lede: "Το KDP του Amazon δεν δέχεται ελληνικά βιβλία. Εμείς τα πουλάμε στο Amazon από τον δικό μας λογαριασμό, μαζί με τα ελληνικά marketplaces, τα βιβλιοπωλεία και τις πλατφόρμες ebook. Εσείς απλώς διαλέγετε πού.",
+      groups: [
+        { title: "Προώθηση της σελίδας σας", text: "Αμέσως, με αυτόματη ενημέρωση τιμών", names: ["Skroutz", "BestPrice", "Google Shopping", "Facebook & Instagram"] },
+        { title: "Marketplaces", text: "Τα καταχωρίζουμε εμείς, σε 3 με 7 εργάσιμες", names: ["Public", "Shopflix", "Amazon", "eBay"] },
+        { title: "Ελληνικά βιβλιοπωλεία", text: "Τα προτείνουμε εμείς, με ISBN", names: ["Πολιτεία", "Ιανός", "Πρωτοπορία"] },
+        { title: "Ebook", text: "Σε κινητά, tablet και e-readers", names: ["Google Play Books", "Apple Books", "Kobo"] },
+      ],
+      cta: "Ενεργοποιήστε τα από τη σελίδα του βιβλίου σας →",
+    },
     how: {
       eyebrow: "Πώς λειτουργεί",
       title: "Από το αρχείο σας στα χέρια του αναγνώστη",
@@ -177,7 +190,7 @@ const el = {
     shelf: { eyebrow: "Για αναγνώστες", title: "Στο ράφι αυτή την εβδομάδα", all: "Όλα τα βιβλία →" },
     facts: [
       ["0 €", "για να εκδώσετε"],
-      ["3", "μορφές από ένα βιβλίο"],
+      ["14", "κανάλια πωλήσεων"],
       ["1", "αντίτυπο αρκεί για παραγγελία"],
       ["5–10", "εργάσιμες ως την πόρτα σας"],
     ],
@@ -199,7 +212,7 @@ const el = {
         ["Χρειάζομαι ISBN;", "Για το βιβλιοπωλείο μας όχι. Αν θέλετε το βιβλίο σας και σε άλλα βιβλιοπωλεία, το ISBN δίνεται δωρεάν από την Εθνική Βιβλιοθήκη της Ελλάδος."],
         ["Πόσα αντίτυπα πρέπει να παραγγείλω;", "Κανένα. Κάθε αντίτυπο τυπώνεται όταν το αγοράσει κάποιος. Αν θέλετε ποσότητα για παρουσίαση ή σχολείο, τυπώνουμε και σε ελληνικό τυπογραφείο."],
         ["Πότε πληρώνομαι;", "Κάθε μήνα, για τις πωλήσεις του προηγούμενου μήνα, με αναλυτική αναφορά ανά βιβλίο και μορφή."],
-        ["Γιατί όχι Amazon;", "Το Amazon KDP δεν δέχεται βιβλία στα ελληνικά. Εδώ τα ελληνικά βιβλία είναι στο κέντρο, μαζί με όποια άλλη γλώσσα γράφετε."],
+        ["Μπορώ να πουλάω και στο Amazon;", "Ναι. Το Amazon KDP δεν δέχεται βιβλία στα ελληνικά, αλλά εμείς τα καταχωρίζουμε στο Amazon από τον δικό μας λογαριασμό πωλητή, όπως και σε Public, Shopflix, eBay και ελληνικά βιβλιοπωλεία. Το ενεργοποιείτε από τη σελίδα του βιβλίου σας. Για τα marketplaces και τα βιβλιοπωλεία χρειάζεται ISBN."],
       ],
     },
   },
@@ -228,6 +241,7 @@ const en: SiteCopy = {
           heading: "Selling",
           items: [
             { icon: "shop", title: "Vivliothiki bookstore", text: "Your book on our shelves, for readers across Greece.", href: "/books" },
+            { icon: "globe", title: "Amazon, Skroutz, Public and more", text: "Your book on 14 sales channels, in one click.", href: "#channels" },
             { icon: "link", title: "Buy link", text: "Sell from your own site, Instagram or Facebook." },
             { icon: "stack", title: "Bulk orders", text: "Printed by a Greek printer, from 100 copies.", href: "#faq" },
           ],
@@ -235,7 +249,7 @@ const en: SiteCopy = {
       ],
       features: [
         { art: "Your book on the shelf in 4 steps", tone: "forest", kicker: "Guide", text: "From your file to the reader's hands.", href: "#how" },
-        { art: "Beyond Amazon", tone: "burgundy", kicker: "Why us", text: "Greek-language books that Amazon KDP won't take.", href: "#faq" },
+        { art: "Greek books on Amazon too", tone: "burgundy", kicker: "Why us", text: "KDP won't take Greek. We sell them there for you.", href: "#channels" },
       ],
     },
     {
@@ -309,7 +323,7 @@ const en: SiteCopy = {
     lede: "Publish your book in minutes and reach readers in Greece and around the world. Each copy is printed only when someone orders it.",
     doors: [
       { kicker: "I'm an author", title: "Publish your book", points: ["No publishing fee, no minimum order", "Paperback, hardcover and ebook from the same files", "See your earnings before you set a price"], cta: "Start for free →", href: "/dashboard" },
-      { kicker: "I'm a reader", title: "Discover independent authors", points: ["Greek books you won't find on Amazon", "Children's, crime, poetry, in many languages", "Delivery in 5–10 working days, or ebooks at once"], cta: "Browse the shelves →", href: "/books" },
+      { kicker: "I'm a reader", title: "Discover independent authors", points: ["Greek books by independent authors", "Children's, crime, poetry, in many languages", "Delivery in 5–10 working days, or ebooks at once"], cta: "Browse the shelves →", href: "/books" },
     ],
     forWhom: {
       eyebrow: "Who it's for",
@@ -338,6 +352,18 @@ const en: SiteCopy = {
       mockPrice: "€19.90",
       mockBuy: "Buy",
     },
+    channels: {
+      eyebrow: "Sell everywhere",
+      title: "One book, 14 sales channels",
+      lede: "Amazon KDP won't take Greek-language books. We sell them on Amazon from our own seller account, along with Greek marketplaces, bookshops and ebook stores. You just choose where.",
+      groups: [
+        { title: "Promote your book page", text: "Straight away, with prices kept up to date", names: ["Skroutz", "BestPrice", "Google Shopping", "Facebook & Instagram"] },
+        { title: "Marketplaces", text: "We list it for you within 3 to 7 business days", names: ["Public", "Shopflix", "Amazon", "eBay"] },
+        { title: "Greek bookshops", text: "We put it forward for you, with an ISBN", names: ["Politeia", "Ianos", "Protoporia"] },
+        { title: "Ebooks", text: "On phones, tablets and e-readers", names: ["Google Play Books", "Apple Books", "Kobo"] },
+      ],
+      cta: "Turn them on from your book's page →",
+    },
     how: {
       eyebrow: "How it works",
       title: "From your file to the reader's hands",
@@ -361,7 +387,7 @@ const en: SiteCopy = {
     shelf: { eyebrow: "For readers", title: "On the shelf this week", all: "All books →" },
     facts: [
       ["€0", "to publish"],
-      ["3", "formats from one book"],
+      ["14", "sales channels"],
       ["1", "copy is enough to order"],
       ["5–10", "working days to your door"],
     ],
@@ -383,7 +409,7 @@ const en: SiteCopy = {
         ["Do I need an ISBN?", "Not for our bookstore. If you want your book in other shops too, the National Library of Greece issues ISBNs for free."],
         ["How many copies must I order?", "None. Each copy is printed when someone buys it. For a launch or a school, we also print in quantity with a Greek printer."],
         ["When do I get paid?", "Monthly, for the previous month's sales, with a report per book and format."],
-        ["Why not Amazon?", "Amazon KDP doesn't accept Greek-language books. Here Greek books come first, alongside any other language you write in."],
+        ["Can I sell on Amazon too?", "Yes. Amazon KDP doesn't accept Greek-language books, but we list them on Amazon from our own seller account, and on Public, Shopflix, eBay and Greek bookshops too. Turn it on from your book's page. Marketplaces and bookshops need an ISBN."],
       ],
     },
   },

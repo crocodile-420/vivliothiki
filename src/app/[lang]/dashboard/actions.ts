@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { BOOK_LANGUAGES, CATEGORIES } from "@/i18n/config";
 import { slugify } from "@/lib/books";
+import { CHANNELS, type ChannelKey, channel } from "@/lib/channels";
 import { type CoverSize, estimateCoverSize, PT_PER_INCH, trimFromPodPackage } from "@/lib/cover";
 import { coverDimensions, PRINT_PACKAGES, type PrintPackageKey, printCostCents } from "@/lib/lulu";
 import { currentUser, supabaseAdmin, supabaseServer } from "@/lib/supabase/server";
@@ -177,4 +178,37 @@ export async function coverSizeFor(kind: PrintPackageKey, pageCount: number): Pr
     }
   }
   return estimateCoverSize(pkg.podPackageId, pages);
+}
+
+const channelKey = z.enum(CHANNELS.map((c) => c.key) as [ChannelKey, ...ChannelKey[]]);
+
+// Turns a sales channel on for one of the author's books. A rejected or paused channel can be asked for again.
+export async function requestChannel(lang: string, bookId: string, key: ChannelKey) {
+  await signedIn();
+  const k = channelKey.parse(key);
+  const supabase = await supabaseServer();
+  await supabase.from("book_channels").delete().eq("book_id", bookId).eq("channel", k).in("status", ["paused", "rejected"]);
+  const { error } = await supabase.from("book_channels").insert({ book_id: bookId, channel: k });
+  if (error) throw new Error(error.message);
+  revalidatePath(`/${lang}/dashboard/books/${bookId}`);
+}
+
+// Turns a channel off. A live marketplace listing can only be taken down by us, so it is flagged for an admin.
+export async function withdrawChannel(lang: string, bookId: string, key: ChannelKey) {
+  await signedIn();
+  const k = channelKey.parse(key);
+  const supabase = await supabaseServer();
+  // Reading through row level security also proves the book is the author's.
+  const { data: row } = await supabase.from("book_channels").select("status").eq("book_id", bookId).eq("channel", k).maybeSingle();
+  if (!row) return;
+  if (row.status === "listed" && channel(k)?.mode === "managed") {
+    await supabaseAdmin().from("book_channels").update({ status: "withdrawing" }).eq("book_id", bookId).eq("channel", k);
+  } else if (row.status === "listed") {
+    // Feed channels are never written as 'listed', but stay safe if an admin set one by hand.
+    await supabaseAdmin().from("book_channels").delete().eq("book_id", bookId).eq("channel", k);
+  } else {
+    const { error } = await supabase.from("book_channels").delete().eq("book_id", bookId).eq("channel", k);
+    if (error) throw new Error(error.message);
+  }
+  revalidatePath(`/${lang}/dashboard/books/${bookId}`);
 }

@@ -5,12 +5,11 @@ import { defaultLocale, isLocale } from "@/i18n/config";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Pages live under /el or /en; send bare paths to the reader's preferred language.
+  // Pages live under /el or /en. Bare paths open in Greek; English is one click away in the header.
   const first = pathname.split("/")[1];
   if (!isLocale(first)) {
-    const preferred = request.headers.get("accept-language")?.toLowerCase().startsWith("el") ? "el" : request.headers.get("accept-language") ? "en" : defaultLocale;
     const url = request.nextUrl.clone();
-    url.pathname = `/${preferred}${pathname === "/" ? "" : pathname}`;
+    url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
     return NextResponse.redirect(url);
   }
 

@@ -20,7 +20,7 @@ Next.js 15 (App Router), Supabase (Postgres, σύνδεση χρηστών, αρ
 
 ## Στήσιμο
 
-1. **Supabase:** νέο project στο supabase.com. Στο SQL editor τρέξτε το `supabase/migrations/0001_init.sql`.
+1. **Supabase:** νέο project στο supabase.com. Στο SQL editor τρέξτε με τη σειρά τα αρχεία του `supabase/migrations/` (`0001_init.sql`, `0002_channels.sql`).
    Στο Authentication → URL Configuration βάλτε το site URL και το `https://<domain>/auth/callback` στα Redirect URLs.
 2. **Stripe:** λογαριασμός στο stripe.com. Δημιουργήστε webhook προς `https://<domain>/api/stripe/webhook`
    για τα events `checkout.session.completed` και `checkout.session.async_payment_succeeded`.
