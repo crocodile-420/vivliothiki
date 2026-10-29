@@ -4,7 +4,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { BOOK_LANGUAGES, CATEGORIES } from "@/i18n/config";
 import { slugify } from "@/lib/books";
-import { PRINT_PACKAGES, type PrintPackageKey, printCostCents } from "@/lib/lulu";
+import { type CoverSize, estimateCoverSize, PT_PER_INCH, trimFromPodPackage } from "@/lib/cover";
+import { coverDimensions, PRINT_PACKAGES, type PrintPackageKey, printCostCents } from "@/lib/lulu";
 import { currentUser, supabaseAdmin, supabaseServer } from "@/lib/supabase/server";
 
 const bookFields = z.object({
@@ -152,4 +153,28 @@ export async function updateProfile(lang: string, form: FormData) {
     .eq("id", user.id);
   if (error) throw new Error(error.message);
   revalidatePath(`/${lang}/dashboard`);
+}
+
+// The exact wraparound cover size for a print format, from Lulu when configured, otherwise an estimate.
+export async function coverSizeFor(kind: PrintPackageKey, pageCount: number): Promise<CoverSize> {
+  await signedIn();
+  const pkg = PRINT_PACKAGES[kind];
+  if (!pkg) throw new Error("Unknown format");
+  const pages = z.number().int().min(2).max(800).parse(pageCount);
+  if (process.env.LULU_CLIENT_KEY) {
+    try {
+      const d = await coverDimensions(pkg.podPackageId, pages);
+      const { widthIn, heightIn } = trimFromPodPackage(pkg.podPackageId);
+      return {
+        widthPt: Number(d.width),
+        heightPt: Number(d.height),
+        trimWidthPt: widthIn * PT_PER_INCH,
+        trimHeightPt: heightIn * PT_PER_INCH,
+        source: "lulu",
+      };
+    } catch (err) {
+      console.error("Lulu cover dimensions failed", err);
+    }
+  }
+  return estimateCoverSize(pkg.podPackageId, pages);
 }

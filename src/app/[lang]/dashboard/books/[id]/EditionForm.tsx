@@ -2,23 +2,31 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Dictionary } from "@/i18n/el";
+import type { PrintPackageKey } from "@/lib/lulu";
 import { saveEdition, type EditionInput } from "../../actions";
+import { CoverBuilder } from "./CoverBuilder";
 import { uploadFile } from "./upload";
 
 interface Props {
-  lang: string;
+  lang: "el" | "en";
   bookId: string;
   userId: string;
   packages: { key: string; label: string }[];
   text: Dictionary["editor"];
+  coverText: Dictionary["coverBuilder"];
+  bookTitle: string;
+  authorName: string;
 }
 
-export function EditionForm({ lang, bookId, userId, packages, text }: Props) {
+export function EditionForm({ lang, bookId, userId, packages, text, coverText, bookTitle, authorName }: Props) {
   const router = useRouter();
   const [kind, setKind] = useState(packages[0]?.key ?? "ebook");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isEbook = kind === "ebook";
+  const [pageCount, setPageCount] = useState<number | null>(null);
+  const [builtCover, setBuiltCover] = useState<File | null>(null);
+  const [showBuilder, setShowBuilder] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,7 +39,7 @@ export function EditionForm({ lang, bookId, userId, packages, text }: Props) {
     };
     try {
       const interior = file("interior");
-      const cover = file("cover");
+      const cover = file("cover") ?? builtCover;
       const ebook = file("ebook");
       const input: EditionInput = {
         bookId,
@@ -45,6 +53,8 @@ export function EditionForm({ lang, bookId, userId, packages, text }: Props) {
       };
       await saveEdition(lang, input);
       e.currentTarget?.reset();
+      setBuiltCover(null);
+      setShowBuilder(false);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -74,7 +84,15 @@ export function EditionForm({ lang, bookId, userId, packages, text }: Props) {
       {!isEbook && (
         <label className="label">
           {text.pageCount}
-          <input name="pageCount" type="number" min={2} max={800} required className="field" />
+          <input
+            name="pageCount"
+            type="number"
+            min={2}
+            max={800}
+            required
+            onChange={(e) => setPageCount(Number(e.target.value) || null)}
+            className="field"
+          />
         </label>
       )}
       <label className="label">
@@ -94,8 +112,29 @@ export function EditionForm({ lang, bookId, userId, packages, text }: Props) {
           </label>
           <label className="label">
             {text.coverPdf}
-            <input name="cover" type="file" accept="application/pdf" required className="mt-1 block text-sm" />
+            <input name="cover" type="file" accept="application/pdf" required={!builtCover} className="mt-1 block text-sm" />
+            {builtCover ? (
+              <span className="mt-1 block text-sm font-normal text-muted">{coverText.using}</span>
+            ) : (
+              <button type="button" className="mt-1 text-sm font-normal text-accent underline" onClick={() => setShowBuilder((v) => !v)}>
+                {coverText.open}
+              </button>
+            )}
           </label>
+          {showBuilder && !builtCover && (
+            <CoverBuilder
+              lang={lang}
+              kind={kind as PrintPackageKey}
+              pageCount={pageCount}
+              defaultTitle={bookTitle}
+              defaultAuthor={authorName}
+              text={coverText}
+              onUse={(f) => {
+                setBuiltCover(f);
+                setShowBuilder(false);
+              }}
+            />
+          )}
         </>
       )}
       <div className="sm:col-span-2">
