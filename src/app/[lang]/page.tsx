@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
-import { LibraryShelves } from "@/components/LibraryShelves";
+import { HeroScene } from "@/components/HeroScene";
 import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { siteCopy } from "@/i18n/site";
@@ -23,19 +23,60 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
   const sale = splitSale({ priceCents: EXAMPLE_PRICE_CENTS, printCostCents: EXAMPLE_PRINT_CENTS, commissionPercent: commission });
   const money = (cents: number) => formatPrice(cents, lang === "el" ? "el-GR" : "en-IE");
   const earn = `≈ ${money(sale.authorCents)}`;
+  // The author keeps this share of what is left after VAT and costs.
+  const share = 100 - commission;
 
   return (
     <div className="home">
-      <section className="library bleed">
-        <LibraryShelves />
-        <div className="library-glow" aria-hidden />
-        <div className="site-wrap library-inner">
-          <p className="eyebrow">{c.eyebrow}</p>
-          <h1>{c.title}</h1>
-          <p className="lede">{c.lede}</p>
+      <section className="hero3d bleed">
+        <HeroScene coverTitle={c.cover.title} coverLine={c.cover.line} chapter={c.cover.chapter} />
+        <div className="hero3d-shade" aria-hidden />
+        <div className="site-wrap hero3d-grid">
+          <div className="hero3d-main">
+            <p className="glass glass-eyebrow">{c.eyebrow}</p>
+            <h1>
+              {c.title} <em>{c.titleEm}</em>
+            </h1>
+            <p className="lede">{c.lede}</p>
+            <div className="hero3d-ctas">
+              <Link className="btn hero3d-cta" href={href("/dashboard")}>
+                {c.cta} →
+              </Link>
+              <Link className="glass glass-go" href={href("/books")}>
+                <span aria-hidden>→</span>
+                {c.ctaShelves}
+              </Link>
+            </div>
+          </div>
+          <aside className="hero3d-side">
+            <Link className="glass g-channels" href={href("#channels")}>
+              <b>14</b>
+              <span>{c.glass.channels}</span>
+              <small>{c.glass.channelNames}</small>
+            </Link>
+            <Link className="glass g-share" href={href("#pricing")}>
+              <small>{c.glass.share}</small>
+              <span className="share-ring">
+                <svg viewBox="0 0 120 120" aria-hidden>
+                  <circle cx="60" cy="60" r="50" className="ring-track" />
+                  <circle cx="60" cy="60" r="50" className="ring-arc" pathLength={100} strokeDasharray={`${share} 100`} />
+                </svg>
+                <b>{share}%</b>
+              </span>
+              <small>{c.glass.shareText}</small>
+            </Link>
+            <Link className="glass g-earn" href={href("#pricing")}>
+              <small>{c.glass.example.replace("{price}", money(EXAMPLE_PRICE_CENTS))}</small>
+              <strong>{earn}</strong>
+              <span className="earn-bar" aria-hidden>
+                <span style={{ width: `${Math.round((sale.authorCents / EXAMPLE_PRICE_CENTS) * 100)}%` }} />
+              </span>
+              <small>{c.glass.earn}</small>
+            </Link>
+          </aside>
           <div className="doors">
             {c.doors.map((d, i) => (
-              <Link key={d.title} className={`door${i ? " door-readers" : ""}`} href={href(d.href)}>
+              <Link key={d.title} className={`glass door${i ? " door-readers" : ""}`} href={href(d.href)}>
                 <span className="door-kicker">{d.kicker}</span>
                 <span className="door-title">{d.title}</span>
                 <ul>
