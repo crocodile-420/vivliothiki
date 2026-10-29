@@ -4,13 +4,13 @@ import { getDictionary } from "@/i18n/dictionaries";
 import { siteCopy } from "@/i18n/site";
 import { currentProfile } from "@/lib/session";
 import { Icon } from "./icons";
+import { LangSwitch } from "./LangSwitch";
 import { MegaMenu } from "./MegaMenu";
 
 export async function Header({ lang }: { lang: Locale }) {
   const t = getDictionary(lang);
   const copy = siteCopy(lang);
   const profile = await currentProfile();
-  const other: Locale = lang === "el" ? "en" : "el";
   return (
     <>
       <div className="utility">
@@ -42,9 +42,7 @@ export async function Header({ lang }: { lang: Locale }) {
             <Link href={`/${lang}/dashboard`} className="btn head-cta">
               {t.nav.publish}
             </Link>
-            <Link href={`/${other}`} className="lang-switch" hrefLang={other}>
-              {other.toUpperCase()}
-            </Link>
+            <LangSwitch lang={lang} />
           </div>
         </div>
       </header>

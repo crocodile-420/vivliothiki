@@ -100,6 +100,28 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
         </div>
       </Link>
 
+      <section id="channels">
+        <p className="eyebrow-dark">{c.channels.eyebrow}</p>
+        <h2 className="section-title">{c.channels.title}</h2>
+        <p className="section-lede">{c.channels.lede}</p>
+        <div className="channels">
+          {c.channels.groups.map((g) => (
+            <div key={g.title} className="channel-group">
+              <strong>{g.title}</strong>
+              <span>{g.text}</span>
+              <ul>
+                {g.names.map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <Link className="channels-cta" href={href("/dashboard")}>
+          {c.channels.cta}
+        </Link>
+      </section>
+
       <section id="how">
         <p className="eyebrow-dark">{c.how.eyebrow}</p>
         <h2 className="section-title">{c.how.title}</h2>

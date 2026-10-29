@@ -40,3 +40,25 @@ export async function markShipped(lang: string, itemId: string, orderId: string,
   await db.from("orders").update({ status: "shipped", tracking_url: tracking, updated_at: new Date().toISOString() }).eq("id", orderId);
   revalidatePath(`/${lang}/admin`);
 }
+
+const CHANNEL_STATUSES = ["requested", "listed", "withdrawing", "paused", "rejected"] as const;
+
+// Records what happened on a marketplace: live (with its link), paused, taken down or not accepted.
+export async function setChannel(lang: string, bookId: string, channel: string, form: FormData) {
+  await requireAdmin(lang);
+  const status = String(form.get("status"));
+  if (!(CHANNEL_STATUSES as readonly string[]).includes(status)) throw new Error("Unknown status");
+  const url = String(form.get("url") ?? "").trim();
+  if (url && !/^https:\/\//.test(url)) throw new Error("The listing link must start with https://");
+  await supabaseAdmin()
+    .from("book_channels")
+    .update({
+      status,
+      listing_url: url || null,
+      note: String(form.get("note") ?? ""),
+      ...(status === "listed" ? { listed_at: new Date().toISOString() } : {}),
+    })
+    .eq("book_id", bookId)
+    .eq("channel", channel);
+  revalidatePath(`/${lang}/admin`);
+}

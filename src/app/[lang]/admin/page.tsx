@@ -4,10 +4,27 @@ import type { Book, Edition } from "@/lib/books";
 import { formatPrice } from "@/lib/pricing";
 import { requireAdmin } from "@/lib/session";
 import { supabaseAdmin } from "@/lib/supabase/server";
-import { approveBook, markShipped, rejectBook, setStock } from "./actions";
+import { type ChannelStatus, channel as channelInfo } from "@/lib/channels";
+import { approveBook, markShipped, rejectBook, setChannel, setStock } from "./actions";
 
 // The review page is for the platform owner only, so its extra labels are Greek only.
-const adminText = { stock: "Απόθεμα", unitCost: "Κόστος/τεμ. (€)", toShip: "Προς αποστολή από απόθεμα", shipped: "Στάλθηκε", tracking: "Αριθμός αποστολής" };
+const adminText = {
+  channels: "Κανάλια πωλήσεων",
+  channelsHelp: "Αιτήματα συγγραφέων για marketplaces και βιβλιοπωλεία. Καταχωρίστε το βιβλίο από τον λογαριασμό της Vivliothiki και βάλτε εδώ τον σύνδεσμο.",
+  channelsEmpty: "Κανένα αίτημα.",
+  listingUrl: "Σύνδεσμος καταχώρισης",
+  noteToAuthor: "Σημείωση (φαίνεται αν δεν γίνει δεκτό)",
+  notPublished: "δεν έχει εγκριθεί ακόμα",
+  stock: "Απόθεμα", unitCost: "Κόστος/τεμ. (€)", toShip: "Προς αποστολή από απόθεμα", shipped: "Στάλθηκε", tracking: "Αριθμός αποστολής" };
+
+type ChannelWork = {
+  book_id: string;
+  channel: string;
+  status: ChannelStatus;
+  listing_url: string | null;
+  note: string;
+  books: { title: string; slug: string; status: string; editions: Pick<Edition, "format" | "isbn" | "price_cents">[] };
+};
 
 export default async function Admin({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
@@ -15,7 +32,7 @@ export default async function Admin({ params }: { params: Promise<{ lang: Locale
   await requireAdmin(lang);
   const db = supabaseAdmin();
 
-  const [{ data: pending }, { data: printEditions }, { data: toShip }, { data: orders }] = await Promise.all([
+  const [{ data: pending }, { data: printEditions }, { data: toShip }, { data: orders }, { data: channelRows }] = await Promise.all([
     db.from("books").select("*, editions(*), author:profiles(display_name)").eq("status", "in_review").order("created_at"),
     db.from("editions").select("*, books!inner(title, status)").neq("format", "ebook").eq("books.status", "published"),
     db
@@ -24,7 +41,14 @@ export default async function Admin({ params }: { params: Promise<{ lang: Locale
       .eq("fulfillment", "stock")
       .is("shipped_at", null),
     db.from("orders").select("*").order("created_at", { ascending: false }).limit(30),
+    db
+      .from("book_channels")
+      .select("*, books!inner(title, slug, status, editions(format, isbn, price_cents))")
+      .in("status", ["requested", "withdrawing", "listed", "paused"])
+      .order("requested_at"),
   ]);
+  // Feed channels go live on their own, so only hand-listed channels need an admin.
+  const channelWork = ((channelRows ?? []) as ChannelWork[]).filter((r) => channelInfo(r.channel)?.mode === "managed");
 
   // Reviewers open the author's files through short-lived links.
   const sign = async (path: string | null) =>
@@ -76,6 +100,38 @@ export default async function Admin({ params }: { params: Promise<{ lang: Locale
                 </form>
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-bold">{adminText.channels}</h2>
+        <p className="mt-1 text-sm text-muted">{adminText.channelsHelp}</p>
+        {channelWork.length === 0 && <p className="mt-4 text-muted">{adminText.channelsEmpty}</p>}
+        <div className="mt-4 space-y-2">
+          {channelWork.map((r) => (
+            <form key={`${r.book_id}-${r.channel}`} action={setChannel.bind(null, lang, r.book_id, r.channel)} className="panel flex flex-wrap items-end gap-3 text-sm">
+              <div className="min-w-56 flex-1">
+                <div className="font-medium">
+                  {channelInfo(r.channel)?.name} · <a className="underline" href={`/${lang}/books/${r.books.slug}`}>{r.books.title}</a>
+                </div>
+                <div className="text-muted">
+                  {t.channels.status[r.status]}
+                  {r.books.status !== "published" && ` · ${adminText.notPublished}`}
+                  {r.books.editions.map((e) => ` · ${t.formats[e.format]} ${formatPrice(e.price_cents)}${e.isbn ? ` ISBN ${e.isbn}` : ""}`).join("")}
+                </div>
+              </div>
+              <select name="status" defaultValue={r.status} className="field mt-0 w-40">
+                {(["requested", "listed", "withdrawing", "paused", "rejected"] as const).map((s) => (
+                  <option key={s} value={s}>
+                    {t.channels.status[s]}
+                  </option>
+                ))}
+              </select>
+              <input name="url" type="url" placeholder={adminText.listingUrl} defaultValue={r.listing_url ?? ""} className="field mt-0 w-64" />
+              <input name="note" placeholder={adminText.noteToAuthor} defaultValue={r.note} className="field mt-0 w-56" />
+              <button className="btn-ghost">{t.dashboard.save}</button>
+            </form>
           ))}
         </div>
       </section>

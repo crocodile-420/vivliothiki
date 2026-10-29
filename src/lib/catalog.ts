@@ -17,6 +17,10 @@ export async function publishedBooks(filter: { language?: string; category?: str
 
 export async function bookBySlug(slug: string) {
   const supabase = await supabaseServer();
-  const { data } = await supabase.from("books").select(`${BOOK_WITH_AUTHOR}, editions(*)`).eq("slug", slug).maybeSingle();
-  return data as (BookWithAuthor & { editions: Edition[] }) | null;
+  const { data } = await supabase
+    .from("books")
+    .select(`${BOOK_WITH_AUTHOR}, editions(*), book_channels(channel, status, listing_url)`)
+    .eq("slug", slug)
+    .maybeSingle();
+  return data as (BookWithAuthor & { editions: Edition[]; book_channels: { channel: string; status: string; listing_url: string | null }[] }) | null;
 }

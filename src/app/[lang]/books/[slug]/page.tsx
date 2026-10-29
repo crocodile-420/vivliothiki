@@ -4,6 +4,7 @@ import type { Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { coverUrl } from "@/lib/books";
 import { bookBySlug } from "@/lib/catalog";
+import { channel } from "@/lib/channels";
 import { formatPrice } from "@/lib/pricing";
 
 const FORMAT_ORDER = { paperback: 0, hardcover: 1, ebook: 2 } as const;
@@ -22,6 +23,11 @@ export default async function BookPage({ params }: { params: Promise<{ lang: Loc
   const cover = coverUrl(book.cover_image_path);
   const editions = [...book.editions].sort((a, b) => FORMAT_ORDER[a.format] - FORMAT_ORDER[b.format]);
   const priceLocale = lang === "el" ? "el-GR" : "en-IE";
+  // Live listings in other stores, for readers who'd rather buy there.
+  const elsewhere = (book.book_channels ?? []).flatMap((r) => {
+    const c = channel(r.channel);
+    return c && r.status === "listed" && r.listing_url ? [{ name: c.name, url: r.listing_url }] : [];
+  });
 
   return (
     <div className="grid gap-10 md:grid-cols-[minmax(0,320px)_1fr]">
@@ -74,6 +80,18 @@ export default async function BookPage({ params }: { params: Promise<{ lang: Loc
           ))}
         </div>
         {editions.some((e) => e.format !== "ebook") && <p className="mt-3 text-sm text-muted">{t.book.shippingNote}</p>}
+        {elsewhere.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-sm font-semibold text-muted">{t.channels.alsoOn}</h2>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {elsewhere.map((s) => (
+                <a key={s.name} href={s.url} target="_blank" rel="noreferrer" className="btn-ghost">
+                  {s.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
