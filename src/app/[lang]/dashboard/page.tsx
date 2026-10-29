@@ -26,7 +26,7 @@ export default async function Dashboard({ params }: { params: Promise<{ lang: Lo
     <div className="space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="text-3xl font-bold">{t.dashboard.title}</h1>
-        <div className="flex gap-6 text-sm">
+        <div id="sales" className="flex gap-6 text-sm">
           <div>
             <div className="text-muted">{t.dashboard.sales}</div>
             <div className="text-xl font-semibold">{copies}</div>

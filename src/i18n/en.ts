@@ -4,20 +4,6 @@ const en: Dictionary = {
   brand: "Vivliothiki Books",
   tagline: "Every author deserves a bookshelf.",
   nav: { books: "Books", publish: "Publish a book", dashboard: "My books", login: "Sign in", logout: "Sign out", admin: "Review" },
-  home: {
-    heroTitle: "Publish and read books in every language",
-    heroBody:
-      "Upload your book; we print it only when someone orders it and ship it straight to the reader. No warehouse, no minimum run.",
-    ctaPublish: "Publish your book",
-    ctaBrowse: "Browse books",
-    latest: "New releases",
-    how: "How it works",
-    steps: [
-      ["Upload", "Your interior and cover PDFs, or an EPUB for the ebook."],
-      ["We review", "We check the files for print and approve the listing."],
-      ["You sell", "Every order is printed and shipped automatically. You keep the earnings."],
-    ],
-  },
   catalog: { title: "Books", empty: "No books here yet.", allLanguages: "All languages", allCategories: "All categories", filter: "Filter" },
   book: { by: "by", buy: "Buy", formats: "Available formats", pages: "pages", language: "Language", isbn: "ISBN", shippingNote: "Print copies are made to order and arrive in 5–10 business days." },
   formats: { paperback: "Paperback", hardcover: "Hardcover", ebook: "Ebook (EPUB/PDF)" },

@@ -11,6 +11,9 @@
   --card: #fffdf8;
   --gold: #c5a15b;
   --forest: #173b2d;
+  --espresso: #281c16;
+  --btn: #8b302d;
+  --btn-ink: #f5efe4;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,6 +25,7 @@
     --accent: #c5a15b;
     --accent-ink: #281c16;
     --card: #281c16;
+    --btn: #9b3a36;
   }
 }
 
@@ -35,11 +39,12 @@
   --color-card: var(--card);
   --color-gold: var(--gold);
   --color-forest: var(--forest);
-  --font-serif: Georgia, "Noto Serif", "Times New Roman", serif;
+  --font-serif: var(--font-literata), Georgia, "Noto Serif", "Times New Roman", serif;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
 }
 
 body {
+  overflow-x: clip;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -50,7 +55,9 @@ h1, h2, h3 {
 }
 
 .btn {
-  @apply inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-medium text-accent-ink hover:opacity-90 disabled:opacity-50;
+  @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50;
+  background: var(--btn);
+  color: var(--btn-ink);
 }
 .btn-ghost {
   @apply inline-flex items-center justify-center rounded-md border border-line px-4 py-2 text-sm font-medium hover:bg-card;
