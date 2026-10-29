@@ -6,6 +6,7 @@ import { supabaseBrowser } from "@/lib/supabase/browser";
 // Passwordless sign-in: Supabase emails a magic link that lands on /auth/callback.
 export function LoginForm({ lang, text }: { lang: string; text: Dictionary["login"] }) {
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [detail, setDetail] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -15,6 +16,8 @@ export function LoginForm({ lang, text }: { lang: string; text: Dictionary["logi
       email,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/${lang}/dashboard` },
     });
+    // Supabase's own message ("Email rate limit exceeded", "Invalid API key") says what to fix.
+    setDetail(error?.message ?? "");
     setState(error ? "error" : "sent");
   }
 
@@ -28,7 +31,12 @@ export function LoginForm({ lang, text }: { lang: string; text: Dictionary["logi
       <button className="btn w-full" disabled={state === "sending"}>
         {text.send}
       </button>
-      {state === "error" && <p className="text-sm text-red-600">{text.error}</p>}
+      {state === "error" && (
+        <p className="text-sm text-red-600">
+          {text.error}
+          {detail && <span className="mt-1 block text-xs opacity-80">{detail}</span>}
+        </p>
+      )}
     </form>
   );
 }
