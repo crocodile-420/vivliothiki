@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import type { Dictionary } from "@/i18n/el";
 import { type CoverSize, coverLayout, PT_PER_INCH } from "@/lib/cover";
-import { COVER_TEMPLATES, type CoverTemplateKey } from "@/lib/coverTemplates";
+import { COVER_TEMPLATES, type CoverTemplateKey, imageSlots } from "@/lib/coverTemplates";
 import { normalizeIsbn13 } from "@/lib/ean13";
 import type { PrintPackageKey } from "@/lib/lulu";
 import { coverSizeFor } from "../../actions";
@@ -28,8 +28,9 @@ async function loadImage(file: File): Promise<HTMLImageElement> {
   return img;
 }
 
-// Crops the image to the front artwork's shape (centered, like object-fit: cover) at print resolution.
-async function prepareFrontImage(file: File, widthPt: number, heightPt: number, grayscale: boolean) {
+// Crops the image to a slot's shape (centered, like object-fit: cover) at print resolution.
+// `filter` is a canvas filter: grayscale for noir covers, blur and darken for a back made from the front.
+async function prepareImage(file: File, widthPt: number, heightPt: number, filter: string) {
   const img = await loadImage(file);
   const target = widthPt / heightPt;
   const srcRatio = img.naturalWidth / img.naturalHeight;
@@ -42,8 +43,10 @@ async function prepareFrontImage(file: File, widthPt: number, heightPt: number, 
   canvas.width = outW;
   canvas.height = outH;
   const ctx = canvas.getContext("2d")!;
-  if (grayscale) ctx.filter = "grayscale(1) contrast(1.1)";
-  ctx.drawImage(img, (img.naturalWidth - sw) / 2, (img.naturalHeight - sh) / 2, sw, sh, 0, 0, outW, outH);
+  ctx.filter = filter;
+  // A blur fades to transparent at the edges, so blurred images are drawn slightly oversized.
+  const bleed = filter.includes("blur") ? outW * 0.06 : 0;
+  ctx.drawImage(img, (img.naturalWidth - sw) / 2, (img.naturalHeight - sh) / 2, sw, sh, -bleed, -bleed, outW + 2 * bleed, outH + 2 * bleed);
   const blob = await new Promise<Blob>((resolve) => canvas.toBlob((b) => resolve(b!), "image/jpeg", 0.92));
   return { jpeg: new Uint8Array(await blob.arrayBuffer()), effectiveDpi };
 }
@@ -73,32 +76,48 @@ export function CoverBuilder({ lang, kind, pageCount, defaultTitle, defaultAutho
     setError(null);
     setLowDpi(null);
     try {
-      const [{ buildCoverPdf }, size, regular, bold] = await Promise.all([
+      const [{ buildCoverPdf }, size, display, body] = await Promise.all([
         import("@/lib/coverPdf"),
         coverSizeFor(kind, pageCount),
-        fetch("/fonts/Literata_400Regular.ttf").then((r) => r.arrayBuffer()),
-        fetch("/fonts/Literata_700Bold.ttf").then((r) => r.arrayBuffer()),
+        fetch(`/fonts/${t.fonts.display}`).then((r) => r.arrayBuffer()),
+        fetch(`/fonts/${t.fonts.body}`).then((r) => r.arrayBuffer()),
       ]);
-      const art = coverLayout(size).frontArt;
-      const image = data.get("cb-image");
+      const slots = imageSlots(coverLayout(size), t, size.heightPt);
+      const noir = t.imageFilter === "noir" ? "grayscale(1) contrast(1.15)" : "";
+      const file = (name: string) => {
+        const f = data.get(name);
+        return f instanceof File && f.size > 0 ? f : null;
+      };
+      const front = file("cb-image");
+      const back = file("cb-back-image");
       let frontImageJpeg: Uint8Array | undefined;
-      if (t.usesImage && image instanceof File && image.size > 0) {
-        const prepared = await prepareFrontImage(image, art.w, art.h, t.imageFilter === "grayscale");
+      let backImageJpeg: Uint8Array | undefined;
+      if (slots.front && front) {
+        const prepared = await prepareImage(front, slots.front.w, slots.front.h, noir || "none");
         frontImageJpeg = prepared.jpeg;
         if (prepared.effectiveDpi < MIN_DPI) setLowDpi(Math.round(prepared.effectiveDpi));
       }
+      if (slots.back && (back || front)) {
+        const filter = back ? noir || "none" : `${noir} blur(${Math.round(slots.back.w / 40)}px) brightness(0.6)`;
+        backImageJpeg = (await prepareImage((back ?? front)!, slots.back.w, slots.back.h, filter)).jpeg;
+      }
+      const optional = (name: string) => String(data.get(name) ?? "").trim() || undefined;
       const bytes = await buildCoverPdf({
         size,
         template,
         title: String(data.get("cb-title") ?? defaultTitle),
-        subtitle: String(data.get("cb-subtitle") ?? "") || undefined,
+        subtitle: optional("cb-subtitle"),
         author: String(data.get("cb-author") ?? defaultAuthor),
         backText: String(data.get("cb-back") ?? ""),
+        tagline: optional("cb-tagline"),
+        authorBio: optional("cb-bio"),
+        ageRange: template === "kids" ? optional("cb-age") : undefined,
         isbn: isbn || undefined,
         background,
         accent,
         frontImageJpeg,
-        fonts: { regular: new Uint8Array(regular), bold: new Uint8Array(bold) },
+        backImageJpeg,
+        fonts: { display: new Uint8Array(display), body: new Uint8Array(body) },
       });
       const url = URL.createObjectURL(new Blob([bytes as BlobPart], { type: "application/pdf" }));
       setResult({ url, bytes, size });
@@ -145,14 +164,34 @@ export function CoverBuilder({ lang, kind, pageCount, defaultTitle, defaultAutho
           {text.isbn}
           <input name="cb-isbn" id="cb-isbn" inputMode="numeric" placeholder="978-…" className="field" />
         </label>
+        {template === "kids" && (
+          <label className="label">
+            {text.ageRange}
+            <input name="cb-age" id="cb-age" placeholder={text.ageRangeExample} className="field" />
+          </label>
+        )}
+        <label className="label sm:col-span-2">
+          {text.tagline}
+          <input name="cb-tagline" id="cb-tagline" className="field" />
+        </label>
         <label className="label sm:col-span-2">
           {text.backText}
           <textarea name="cb-back" id="cb-back" rows={5} className="field" />
         </label>
-        {t.usesImage && (
+        <label className="label sm:col-span-2">
+          {text.authorBio}
+          <textarea name="cb-bio" id="cb-bio" rows={2} className="field" />
+        </label>
+        {t.frontImage !== "none" && (
           <label className="label sm:col-span-2">
             {text.frontImage}
             <input name="cb-image" id="cb-image" type="file" accept="image/jpeg,image/png,image/webp" className="mt-1 block text-sm" />
+          </label>
+        )}
+        {t.backImage && (
+          <label className="label sm:col-span-2">
+            {text.backImage}
+            <input name="cb-back-image" id="cb-back-image" type="file" accept="image/jpeg,image/png,image/webp" className="mt-1 block text-sm" />
           </label>
         )}
         <label className="label">

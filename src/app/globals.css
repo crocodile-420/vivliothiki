@@ -1,24 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #fbf7f0;
-  --ink: #2b2620;
-  --muted: #6f655a;
-  --line: #e4dccf;
-  --accent: #8a3b2a;
-  --accent-ink: #ffffff;
-  --card: #ffffff;
+  /* Espresso, forest, antique gold, burgundy and warm ivory. */
+  --paper: #f5efe4;
+  --ink: #281c16;
+  --muted: #6b5a4c;
+  --line: #e3d7c3;
+  --accent: #8b302d;
+  --accent-ink: #f5efe4;
+  --card: #fffdf8;
+  --gold: #c5a15b;
+  --forest: #173b2d;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #1b1815;
-    --ink: #efe8dd;
-    --muted: #b3a797;
-    --line: #3a332c;
-    --accent: #d98a6c;
-    --accent-ink: #1b1815;
-    --card: #24201c;
+    --paper: #1d1410;
+    --ink: #f5efe4;
+    --muted: #bfae97;
+    --line: #3e2f26;
+    --accent: #c5a15b;
+    --accent-ink: #281c16;
+    --card: #281c16;
   }
 }
 
@@ -30,6 +33,8 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-card: var(--card);
+  --color-gold: var(--gold);
+  --color-forest: var(--forest);
   --font-serif: Georgia, "Noto Serif", "Times New Roman", serif;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
 }
