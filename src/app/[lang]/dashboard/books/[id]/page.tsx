@@ -131,7 +131,10 @@ export default async function BookEditor({ params }: { params: Promise<{ lang: L
             packages={packages}
             text={t.editor}
             coverText={t.coverBuilder}
+            manuscriptText={t.manuscript}
             bookTitle={book.title}
+            bookSubtitle={book.subtitle}
+            bookLanguage={book.language}
             authorName={profile.display_name}
           />
         )}
