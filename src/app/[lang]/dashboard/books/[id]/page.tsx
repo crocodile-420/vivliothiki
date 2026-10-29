@@ -117,7 +117,18 @@ export default async function BookEditor({ params }: { params: Promise<{ lang: L
             </div>
           );
         })}
-        {editable && <EditionForm lang={lang} bookId={book.id} userId={profile.id} packages={packages} text={t.editor} />}
+        {editable && (
+          <EditionForm
+            lang={lang}
+            bookId={book.id}
+            userId={profile.id}
+            packages={packages}
+            text={t.editor}
+            coverText={t.coverBuilder}
+            bookTitle={book.title}
+            authorName={profile.display_name}
+          />
+        )}
       </section>
 
       {editable && (
