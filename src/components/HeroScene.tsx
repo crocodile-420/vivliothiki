@@ -181,9 +181,11 @@ export function HeroScene({ coverTitle, coverLine, chapter }: { coverTitle: stri
         book.add(pivot);
         return { pivot, geo, base: Float32Array.from(geo.attributes.position.array) };
       });
-      const rig = new THREE.Group(); // camera-relative, so the book walks with the reader
+      // The book stands in the middle of the aisle and walks along with the reader.
+      const rig = new THREE.Group();
+      rig.scale.setScalar(0.7);
       rig.add(book);
-      camera.add(rig);
+      scene.add(rig);
       const key = new THREE.DirectionalLight(0xffe9c9, 2.2);
       key.position.set(4, 5, 6);
       const rim = new THREE.PointLight(C.gold, 30, 20, 1.6);
@@ -228,18 +230,20 @@ export function HeroScene({ coverTitle, coverLine, chapter }: { coverTitle: stri
         lamps.position.z = -Math.floor(travel / 6) * 6 + 6;
         dust.position.y = reduced ? 0 : Math.sin(time / 3000) * 0.15;
 
-        // Wide screens: the book stands to the right of the headline. Narrow: above it.
+        // Wide screens: the book stands down the aisle, between the headline and the cards.
+        // Narrow: in the empty band above the text, about 180px tall and 170px from the top.
         const wide = camera.aspect > 1.1;
-        if (wide) rig.position.set(3.3, 0.25, -12);
+        if (wide) rig.position.set(0, 0, camera.position.z - 9);
         else {
-          // Put the book in the empty band above the text: about 180px tall, centered 170px from the top.
           const h = canvas.clientHeight, tan = Math.tan((camera.fov * Math.PI) / 360);
-          const dist = (H * h) / 180 / (2 * tan);
-          rig.position.set(1.1, dist * tan * (1 - (2 * 170) / h), -dist);
+          const dist = (H * 0.7 * h) / 180 / (2 * tan);
+          rig.position.set(0, camera.position.y + dist * tan * (1 - (2 * 170) / h), camera.position.z - dist);
         }
         const t = reduced ? 3.2 : (time / 1000) % CYCLE;
         const open = t < 1.2 ? 0 : t < 3 ? ease((t - 1.2) / 1.8) : t < 8.6 ? 1 : t < 10.4 ? 1 - ease((t - 8.6) / 1.8) : 0;
         hinge.rotation.y = -open * Math.PI * 0.82;
+        // An open book spreads to the left of its spine, so slide it right to keep the spread centered.
+        rig.position.x += open * (W / 2) * 0.7;
         pages.forEach((p, i) => {
           const start = 2.2 + i * 0.32, end = 8.4 - i * 0.12;
           const f = reduced

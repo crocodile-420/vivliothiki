@@ -77,8 +77,8 @@ a.mega-item:hover strong { color: var(--accent); }
   background:
     linear-gradient(90deg, rgba(26, 18, 14, .88) 0%, rgba(26, 18, 14, .55) 34%, rgba(26, 18, 14, 0) 62%),
     linear-gradient(180deg, rgba(26, 18, 14, .2), rgba(26, 18, 14, 0) 30%, rgba(26, 18, 14, .75)); }
-.hero3d-grid { display: grid; grid-template-columns: minmax(0, 1fr) 210px; grid-template-areas: "main side" "doors side"; gap: 22px 28px; padding-block: 56px 40px; }
-.hero3d-main { grid-area: main; display: grid; gap: 18px; align-content: start; min-width: 0; padding-bottom: 150px; }
+.hero3d-grid { display: grid; grid-template-columns: minmax(0, 1fr) 210px; grid-template-areas: "main side"; gap: 22px 28px; padding-block: 56px 64px; }
+.hero3d-main { grid-area: main; display: grid; gap: 18px; align-content: start; min-width: 0; padding-bottom: 40px; }
 .hero3d h1 { max-width: 13ch; margin: 0; font-weight: 700; font-size: clamp(36px, 5.6vw, 66px); line-height: 1.04; letter-spacing: -.015em; color: #f5efe4; text-wrap: balance; text-shadow: 0 2px 30px rgba(26, 18, 14, .6); }
 .hero3d h1 em { display: block; font-style: italic; font-weight: 400; color: var(--gold); }
 .lede { margin: 0; max-width: 46ch; font-size: 18px; line-height: 1.6; color: #e4d9c6; }
@@ -110,16 +110,16 @@ a.mega-item:hover strong { color: var(--accent); }
 .earn-bar { display: block; height: 8px; margin: 4px 0; border-radius: 999px; background: rgba(245, 239, 228, .14); overflow: hidden; }
 .earn-bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--gold)); }
 
-.doors { grid-area: doors; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 16px; }
-.door { display: grid; gap: 8px; padding: 20px 22px; border-radius: 20px; transition: transform .2s, border-color .2s; }
-.door.door-readers { background: rgba(23, 59, 45, .5); }
+.doors { display: grid; margin-top: 28px; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 16px; }
+.door { display: grid; gap: 8px; padding: 20px 22px; border-radius: 20px; color: #f5efe4; background: #281c16; border: 1px solid rgba(197, 161, 91, .35); transition: transform .2s, border-color .2s; }
+.door.door-readers { background: #173b2d; }
 .door:hover { transform: translateY(-2px); border-color: var(--gold); }
 .door-kicker { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); }
 .door-title { font: 700 22px var(--font-serif); }
 .door ul { display: grid; gap: 3px; margin: 2px 0 6px; padding-left: 18px; list-style: disc; font-size: 14px; color: #ddd0bb; }
 .door-cta { font-weight: 600; color: #d9b874; }
 @media (max-width: 1060px) {
-  .hero3d-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "side" "doors"; padding-top: 300px; }
+  .hero3d-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "side"; padding-top: 300px; }
   .hero3d-main { padding-bottom: 0; }
   .hero3d-shade { background: linear-gradient(180deg, rgba(26, 18, 14, 0) 0, rgba(26, 18, 14, .1) 230px, rgba(26, 18, 14, .88) 420px); }
   .hero3d-side { flex-direction: row; overflow-x: auto; margin-inline: -16px; padding: 2px 16px 6px; scroll-snap-type: x mandatory; }
