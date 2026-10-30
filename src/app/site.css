@@ -82,6 +82,10 @@ a.mega-item:hover strong { color: var(--accent); }
 .hero3d h1 { max-width: 13ch; margin: 0; font-weight: 700; font-size: clamp(36px, 5.6vw, 66px); line-height: 1.04; letter-spacing: -.015em; color: #f5efe4; text-wrap: balance; text-shadow: 0 2px 30px rgba(26, 18, 14, .6); }
 .hero3d h1 em { display: block; font-style: italic; font-weight: 400; color: var(--gold); }
 .lede { margin: 0; max-width: 46ch; font-size: 18px; line-height: 1.6; color: #e4d9c6; }
+.hero3d .lede { max-width: 38ch; font-size: 19px; color: #f0e7d8; text-shadow: 0 1px 16px rgba(26, 18, 14, .8); }
+.hero3d-points { display: grid; gap: 10px; margin: 2px 0 0; padding: 0; list-style: none; }
+.hero3d-points li { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; color: #f5efe4; text-shadow: 0 1px 12px rgba(26, 18, 14, .9); }
+.hero3d-points li::before { content: "✓"; flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; color: #1a120e; background: var(--gold); box-shadow: 0 0 12px rgba(197, 161, 91, .5); }
 
 .glass { background: rgba(245, 239, 228, .09); border: 1px solid rgba(245, 239, 228, .2); color: #f5efe4; backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2); }
 .glass-eyebrow { justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 6px 12px; border-radius: 999px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }

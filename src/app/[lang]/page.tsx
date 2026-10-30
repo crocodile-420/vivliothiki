@@ -38,6 +38,11 @@ export default async function Home({ params }: { params: Promise<{ lang: Locale 
               {c.title} <em>{c.titleEm}</em>
             </h1>
             <p className="lede">{c.lede}</p>
+            <ul className="hero3d-points">
+              {c.points.map((pt) => (
+                <li key={pt}>{pt}</li>
+              ))}
+            </ul>
             <div className="hero3d-ctas">
               <Link className="btn hero3d-cta" href={href("/dashboard")}>
                 {c.cta} →
