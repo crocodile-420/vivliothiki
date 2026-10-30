@@ -122,9 +122,15 @@ const el = {
   ] as MenuEntry[],
   home: {
     eyebrow: "Εκδόσεις για ανεξάρτητους συγγραφείς",
-    title: "Λιγότερα εμπόδια.",
-    titleEm: "Περισσότεροι αναγνώστες.",
-    lede: "Ανεβάστε το βιβλίο σας. Εμείς το τυπώνουμε, το πουλάμε σε 14 κανάλια, από το Skroutz ως το Amazon, και το στέλνουμε στον αναγνώστη.",
+    title: "Εκδώστε το βιβλίο σας.",
+    titleEm: "Πουλήστε το παντού.",
+    lede: "Από το αρχείο Word ως τα χέρια του αναγνώστη. Χωρίς κόστος έκδοσης, χωρίς αποθήκη, χωρίς ελάχιστη ποσότητα.",
+    points: [
+      "Σελιδοποίηση και εξώφυλλο έτοιμα σε λεπτά",
+      "Έντυπο, σκληρόδετο και ebook",
+      "Skroutz, Public, Amazon και άλλα 11 κανάλια",
+      "Τυπώνουμε και στέλνουμε κάθε παραγγελία",
+    ],
     cta: "Εκδώστε το βιβλίο σας",
     ctaShelves: "Δείτε τα ράφια",
     glass: {
@@ -331,9 +337,15 @@ const en: SiteCopy = {
   ],
   home: {
     eyebrow: "Publishing for independent authors",
-    title: "Fewer hurdles.",
-    titleEm: "More readers.",
-    lede: "Upload your book. We print it, sell it on 14 channels, from Skroutz to Amazon, and send it to the reader.",
+    title: "Publish your book.",
+    titleEm: "Sell it everywhere.",
+    lede: "From your Word file to the reader's hands. No publishing fee, no stock, no minimum order.",
+    points: [
+      "Typesetting and cover ready in minutes",
+      "Paperback, hardcover and ebook",
+      "Skroutz, Public, Amazon and 11 more channels",
+      "We print and ship every order",
+    ],
     cta: "Publish your book",
     ctaShelves: "Browse the shelves",
     glass: {
